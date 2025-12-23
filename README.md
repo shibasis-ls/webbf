@@ -26,7 +26,7 @@ The tool follows a four-stage execution pipeline:
 ## Usage
 1. **Clone the repo:**
    ```bash
-   git clone [https://github.com/shibasis-ls/webbf.git](https://github.com/shibasis-ls/webbf.git)
+   git clone https://github.com/shibasis-ls/webbf.git
     ```
 ### Installation
 
