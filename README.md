@@ -1,29 +1,27 @@
 # Web Authentication Auditor (webbf)
 
-A Python-based utility for performing automated credential testing against web authentication forms. This tool utilizes **Response Size Analysis** to detect successful logins, making it effective against applications that return consistent HTTP 200 OK status codes for failed attempts.
+A lightweight, high-velocity Python utility designed to audit web authentication layers through automated credential testing. This tool is built to deconstruct the mechanics of HTTP POST requests, session handling, and differential response analysis.
 
 ## Technical Overview
-Many modern web applications do not use HTTP 302 redirects or 401 Unauthorized codes to signal login failures. Instead, they serve a "Login Failed" message within a standard 200 OK response. 
+`webbf` is an offensive security tool that automates the process of identifying valid credentials on web login forms. Unlike basic scripts that rely solely on HTTP status codes, this tool performs a baseline measurement of the target application to identify successful logins through **Response Size Deviation**.
 
-`webbf` bypasses this by:
-1. Sending a baseline "known-bad" request to calculate the standard failure response size.
-2. Iterating through a wordlist and comparing the byte-count of each response to the baseline.
-3. Flagging any response that deviates significantly from the baseline as a potential successful login.
+This approach is particularly effective against modern web applications that return a generic "200 OK" status for both successful and failed authentication attempts.
 
 
 
 ## Key Features
-- **Differential Analysis:** Detects success based on response content-length delta (>20 bytes by default).
-- **Multi-User Support:** Iterates through a provided list of usernames for a single password file.
-- **Real-time Terminal Output:** Uses `sys.stdout` flushing to provide a clean, live update of the current user:password combination being tested.
-- **Dynamic Baseline:** Automatically calculates the failure size at runtime to adapt to the specific target environment.
+- **Multi-User Auditing:** Supports comma-separated username lists to perform targeted credential stuffing or multi-account testing in a single execution.
+- **Response Size Filtering:** Establishes a baseline "failure size" and monitors for anomalies (deltas) in return content length to detect successful logins.
+- **Real-time Progress Monitoring:** Utilizes `sys.stdout` buffer flushing to provide live updates of the current `user:password` attempt without polluting the terminal history.
+- **Input Sanitization:** Automatically strips and encodes wordlist entries to ensure compatibility with diverse web server environments.
 
 ## How it Works
-1. **Baseline Request:** Sends `admin:admin` (or any dummy creds) to the target URL.
-2. **Measurement:** Records the length of the response content.
-3. **Iteration:** Loops through the username list and the provided password dictionary.
-4. **Comparison:** Calculates the absolute difference between the current response size and the baseline.
-5. **Success Trigger:** If the difference exceeds the defined threshold, the script identifies the match and terminates.
+The tool follows a four-stage execution pipeline:
+
+1. **Baseline Creation:** The script sends a known-invalid request to the target URL to measure the standard "Login Failed" response size.
+2. **Wordlist Ingestion:** It parses a user-provided password file, handling newline characters and encoding the data for transmission.
+3. **Automated Iteration:** It loops through the provided username list, testing each password against the target endpoint via HTTP POST requests.
+4. **Differential Analysis:** The script calculates the absolute difference between the current response size and the baseline. A significant deviation (default > 20 bytes) triggers a success notification.
 
 ## Usage
 1. **Clone the repo:**
