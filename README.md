@@ -1,32 +1,41 @@
-# Python Web Login Brute Forcer
+# Web Authentication Auditor (webbf)
 
-A conceptual Python tool designed to automate login attempts against web forms using a dictionary attack approach. This project demonstrates how HTTP requests can be automated and how response analysis (specifically response length) can be used to infer valid credentials without relying on specific error messages.
+A Python-based utility for performing automated credential testing against web authentication forms. This tool utilizes **Response Size Analysis** to detect successful logins, making it effective against applications that return consistent HTTP 200 OK status codes for failed attempts.
 
 ## Technical Overview
+Many modern web applications do not use HTTP 302 redirects or 401 Unauthorized codes to signal login failures. Instead, they serve a "Login Failed" message within a standard 200 OK response. 
 
-This script interacts with a target web application by sending HTTP `POST` requests. Unlike tools that look for specific strings (e.g., "Incorrect password"), this tool uses **Response Size Analysis**.
+`webbf` bypasses this by:
+1. Sending a baseline "known-bad" request to calculate the standard failure response size.
+2. Iterating through a wordlist and comparing the byte-count of each response to the baseline.
+3. Flagging any response that deviates significantly from the baseline as a potential successful login.
 
-It first establishes a "baseline" for a failed login by sending a known incorrect credential set. It then compares the size (in bytes) of subsequent responses against this baseline. A significant deviation in response size suggests a change in the server's behavior, often indicating a successful login or a different state (like a redirection or 2FA prompt).
+
 
 ## Key Features
+- **Differential Analysis:** Detects success based on response content-length delta (>20 bytes by default).
+- **Multi-User Support:** Iterates through a provided list of usernames for a single password file.
+- **Real-time Terminal Output:** Uses `sys.stdout` flushing to provide a clean, live update of the current user:password combination being tested.
+- **Dynamic Baseline:** Automatically calculates the failure size at runtime to adapt to the specific target environment.
 
-* **Response Length Heuristics:** Detects successful logins by analyzing the `Content-Length` of the HTTP response rather than parsing HTML text.
-* **Multi-User Support:** Accepts a list of usernames to iterate through, allowing for credential stuffing tests.
-* **Real-Time Feedback:** uses `sys.stdout` to print the current attempt without flooding the terminal with new lines.
-* **Automated Baseline:** Automatically calculates the size of a failed login request before starting the attack.
+## How it Works
+1. **Baseline Request:** Sends `admin:admin` (or any dummy creds) to the target URL.
+2. **Measurement:** Records the length of the response content.
+3. **Iteration:** Loops through the username list and the provided password dictionary.
+4. **Comparison:** Calculates the absolute difference between the current response size and the baseline.
+5. **Success Trigger:** If the difference exceeds the defined threshold, the script identifies the match and terminates.
 
-## Prerequisites
-
-* Python 3.x
-* `requests` library
-
+## Usage
+1. **Clone the repo:**
+   ```bash
+   git clone [https://github.com/shibasis-ls/webbf.git](https://github.com/shibasis-ls/webbf.git)
+    ```
 ### Installation
 
-Install the required library:
-
-```bash
-pip install requests
-```
+2. **Install the required library:**
+    ```bash
+    pip install requests
+    ```
 ## How It Works
 * **Input**: The user provides the target URL, a comma-separated list of usernames, and the path to a password wordlist.
 * **Baseline**: The script sends a dummy request (admin:admin) to gauge the byte size of a standard "Login Failed" page.
