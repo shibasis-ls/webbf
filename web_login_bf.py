@@ -46,7 +46,7 @@ except FileNotFoundError:
 
 print("[*] establishing baseline...")
 try:
-    wrong_login = requests.post(args.target, data={'username': 'invalid_admin', 'password': 'invalid_admin'}, proxies=proxies, timeout=10)
+    wrong_login = requests.post(args.target, data={args.user_field: 'invalid_admin', args.pass_field: 'invalid_admin'}, proxies=proxies, timeout=10)
     failure_size = len(wrong_login.content)
 except Exception as e:
     print("[!] Connection failed. Check the URL.")
