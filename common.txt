@@ -145,6 +145,7 @@ intermec
 ironport
 isee
 isp
+jenkins
 jagadmin
 jannie
 kermit
